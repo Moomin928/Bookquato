@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/BookApp-api/">
+    <Project Path="BookApp-api/BookApp-api/BookApp-api.csproj" />
+  </Folder>
+</Solution>

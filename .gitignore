@@ -1,0 +1,19 @@
+# macOS and IDE files
+.DS_Store
+.idea/
+.vscode/*.code-snippets
+
+# .NET build output
+**/bin/
+**/obj/
+
+# Angular dependencies, caches, and build output
+BookApp-client/node_modules/
+BookApp-client/.angular/
+BookApp-client/dist/
+
+# Local databases and environment secrets
+*.db
+*.db-shm
+*.db-wal
+appsettings.Local.json
