@@ -1,0 +1,96 @@
+@mixin base {
+  :host {
+    display: block;
+  }
+
+  .page-shell {
+    padding: 2rem 1.25rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #7c3aed;
+    font-weight: 700;
+    font-size: 0.72rem;
+  }
+
+  h1 {
+    margin: 0.35rem 0 0;
+    font-size: 2.5rem;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  label {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  input,
+  textarea {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 0.8rem;
+    font-size: 1rem;
+    resize: vertical;
+  }
+
+  .primary,
+  .ghost {
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .primary {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+  }
+
+  .ghost {
+    background: var(--soft-bg);
+    color: var(--text);
+  }
+
+  .state {
+    padding: 2rem;
+    text-align: center;
+    color: var(--muted-text);
+  }
+
+  @media (max-width: 640px) {
+    .page-shell {
+      padding: 1.25rem 1rem 2rem;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .page-header .primary {
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+  }
+}
