@@ -68,13 +68,13 @@ As a visitor, I want to register and log in securely so that I can access protec
 
 ## Acceptance Criteria
 
-- [ ] `POST /api/auth/register` accepts a username and password and returns HTTP 201 for a new user.
-- [ ] Passwords are stored only as BCrypt hashes.
-- [ ] Duplicate usernames return HTTP 409 with a stable error response.
-- [ ] `POST /api/auth/login` returns HTTP 200 and a signed JWT for valid credentials.
-- [ ] The JWT contains the authenticated user's ID in a documented claim.
-- [ ] Invalid credentials return HTTP 401 without revealing whether the username exists.
-- [ ] JWT issuer, audience, expiry, and signing key are loaded from configuration.
+- [x] `POST /api/auth/register` accepts a username and password and returns HTTP 201 for a new user.
+- [x] Passwords are stored only as BCrypt hashes.
+- [x] Duplicate usernames return HTTP 409 with a stable error response.
+- [x] `POST /api/auth/login` returns HTTP 200 and a signed JWT for valid credentials.
+- [x] The JWT contains the authenticated user's ID in a documented claim.
+- [x] Invalid credentials return HTTP 401 without revealing whether the username exists.
+- [x] JWT issuer, audience, expiry, and signing key are loaded from configuration.
 
 ## Suggested Solution
 
@@ -82,12 +82,12 @@ Implement `RegisterUser` and `LoginUser` inside `Modules/Users`, with thin contr
 
 ## Scope / Tasks
 
-- [ ] Add request and response DTOs with username/password validation.
-- [ ] Add registration and login commands, handlers, and `AuthController`.
-- [ ] Add BCrypt password hashing and verification.
-- [ ] Add a token service that creates tokens with user ID and username claims.
-- [ ] Add JWT bearer authentication and `UseAuthentication()` before authorization.
-- [ ] Add consistent 400, 401, and 409 error responses.
+- [x] Add request and response DTOs with username/password validation.
+- [x] Add registration and login commands, handlers, and `AuthController`.
+- [x] Add BCrypt password hashing and verification.
+- [x] Add a token service that creates tokens with user ID and username claims.
+- [x] Add JWT bearer authentication and `UseAuthentication()` before authorization.
+- [x] Add consistent 400, 401, and 409 error responses.
 
 ## Notes
 

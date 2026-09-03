@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--page-bg);
+  color: var(--text);
+  font-family: Inter, 'Segoe UI', sans-serif;
+}
+
+main {
+  min-height: calc(100vh - 80px);
+}
+
+button, input, textarea {
+  font: inherit;
+}
