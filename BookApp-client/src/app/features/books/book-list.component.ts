@@ -17,11 +17,12 @@ import { Book, BookService } from '../../services/book.service';
           <h1>Books</h1>
         </div>
         <button class="primary btn btn-primary" type="button" (click)="toggleForm()">
-          {{ showForm ? 'Close form' : 'Add book' }}
+          {{ showForm ? (editingId === null ? 'Close form' : 'Cancel edit') : 'Add book' }}
         </button>
       </div>
 
       <form *ngIf="showForm" [formGroup]="form" (ngSubmit)="submit()" class="book-form">
+        <h2>{{ editingId === null ? 'Add a book' : 'Edit book' }}</h2>
         <div class="field">
           <label>Title</label>
           <input class="form-control" formControlName="title" />
@@ -35,7 +36,7 @@ import { Book, BookService } from '../../services/book.service';
           <input class="form-control" type="date" formControlName="publishedDate" />
         </div>
         <button class="primary btn btn-primary" type="submit" [disabled]="form.invalid || submitting">
-          {{ submitting ? 'Saving...' : 'Save book' }}
+          {{ submitting ? 'Saving...' : (editingId === null ? 'Save book' : 'Update book') }}
         </button>
       </form>
 
@@ -47,7 +48,10 @@ import { Book, BookService } from '../../services/book.service';
         <article class="book-card card" *ngFor="let book of books">
           <div class="meta-row">
             <span class="badge">Book</span>
-            <button type="button" class="ghost btn btn-light" (click)="deleteBook(book.bookId)">Delete</button>
+            <div class="actions">
+              <button type="button" class="ghost btn btn-light" (click)="editBook(book)">Edit</button>
+              <button type="button" class="ghost btn btn-light" (click)="deleteBook(book.bookId)">Delete</button>
+            </div>
           </div>
           <h2>{{ book.title }}</h2>
           <p><strong>Author:</strong> {{ book.authorName }}</p>
@@ -62,9 +66,11 @@ import { Book, BookService } from '../../services/book.service';
       @include feature-page.base;
 
       .book-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: var(--panel); border: 1px solid rgba(148,163,184,0.25); border-radius: 18px; padding: 1rem; margin-bottom: 1.5rem; }
+      .book-form h2 { grid-column: 1 / -1; margin: 0; font-size: 1.25rem; }
       .book-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
       .book-card { background: var(--panel); border: 1px solid rgba(148,163,184,0.25); border-radius: 18px; padding: 1.25rem; box-shadow: 0 14px 35px rgba(15,23,42,0.05); }
       .meta-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+      .actions { display: flex; gap: 0.5rem; }
       .badge { background: #eef2ff; color: #4338ca; padding: 0.35rem 0.6rem; border-radius: 999px; font-size: 0.74rem; font-weight: 700; }
       h2 { margin: 0 0 0.75rem; font-size: 1.35rem; }
       p { margin: 0.35rem 0; color: var(--muted-text); }
@@ -81,6 +87,7 @@ export class BookListComponent implements OnInit {
   showForm = false;
   submitting = false;
   errorMessage = '';
+  editingId: number | null = null;
 
   form = new FormGroup({
     title: new FormControl('', [Validators.required]),
@@ -100,9 +107,23 @@ export class BookListComponent implements OnInit {
 
   toggleForm(): void {
     this.showForm = !this.showForm;
-    if (!this.showForm) {
-      this.form.reset();
-    }
+    if (!this.showForm) this.cancelEdit();
+  }
+
+  editBook(book: Book): void {
+    this.editingId = book.bookId;
+    this.showForm = true;
+    this.form.patchValue({
+      title: book.title,
+      authorName: book.authorName,
+      publishedDate: book.publishedDate ?? '',
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+    this.form.reset();
   }
 
   submit(): void {
@@ -119,19 +140,26 @@ export class BookListComponent implements OnInit {
 
     this.submitting = true;
 
-    this.bookService.create(payload).subscribe({
-      next: () => {
-        this.form.reset();
-        this.showForm = false;
-        this.loadBooks();
-      },
-      error: () => {
-        this.submitting = false;
-      },
-      complete: () => {
-        this.submitting = false;
-      },
+    if (this.editingId === null) {
+      this.bookService.create(payload).subscribe({
+        next: () => this.finishSave(),
+        error: () => this.submitting = false,
+        complete: () => this.submitting = false,
+      });
+      return;
+    }
+
+    this.bookService.update(this.editingId, payload).subscribe({
+      next: () => this.finishSave(),
+      error: () => this.submitting = false,
+      complete: () => this.submitting = false,
     });
+  }
+
+  private finishSave(): void {
+    this.showForm = false;
+    this.cancelEdit();
+    this.loadBooks();
   }
 
   deleteBook(id: number): void {
