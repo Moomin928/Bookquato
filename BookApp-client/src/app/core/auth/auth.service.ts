@@ -20,7 +20,7 @@ export interface RegisterRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:5181/api';
+  private readonly apiUrl = 'https://bookquato.onrender.com/api';
   readonly user = signal<string | null>(this.getStoredUser());
   readonly isAuthenticated = signal<boolean>(this.hasToken());
 
