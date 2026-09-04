@@ -13,7 +13,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("LocalNg", policy =>
     {
         policy
-            .WithOrigins("http://localhost:4200", "http://127.0.0.1:4200", "https://agent-6a9aaf9e9a992d8b--vermillion-khapse-68d62e.netlify.app")
+            .WithOrigins(
+                "http://localhost:4200",
+                "http://127.0.0.1:4200",
+                "https://agent-6a9aaf9e9a992d8b--vermillion-khapse-68d62e.netlify.app",
+                "https://vermillion-khapse-68d62e.netlify.app")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
