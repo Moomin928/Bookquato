@@ -18,6 +18,14 @@
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
 }
 
+.auth-card h1 {
+  color: var(--text);
+}
+
+.auth-card p {
+  color: var(--muted-text);
+}
+
 h1 {
   margin: 0;
   font-size: 2rem;

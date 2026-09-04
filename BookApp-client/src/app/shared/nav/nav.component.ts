@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { filter } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
@@ -16,17 +17,16 @@ import { AuthService } from '../../core/auth/auth.service';
         data-bs-toggle="collapse"
         data-bs-target="#mainNavigation"
         aria-controls="mainNavigation"
-        [attr.aria-expanded]="menuOpen()"
+        aria-expanded="false"
         aria-label="Toggle navigation"
-        (click)="toggleMenu()"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" [class.show]="menuOpen()" id="mainNavigation">
+      <div class="collapse navbar-collapse" id="mainNavigation">
         <div class="nav-links navbar-nav" *ngIf="authService.isAuthenticated()">
-          <a class="nav-link" routerLink="/books" routerLinkActive="active" (click)="closeMenu()">Books</a>
-          <a class="nav-link" routerLink="/quotes" routerLinkActive="active" (click)="closeMenu()">Quotes</a>
+          <a class="nav-link" routerLink="/books" routerLinkActive="active">Books</a>
+          <a class="nav-link" routerLink="/quotes" routerLinkActive="active">Quotes</a>
         </div>
         <div class="nav-actions ms-auto">
           <button class="theme-toggle" type="button" (click)="toggleTheme()">
@@ -43,7 +43,7 @@ import { AuthService } from '../../core/auth/auth.service';
             <button class="logout" type="button" (click)="logout()">Logout</button>
           </ng-container>
           <ng-template #guestLinks>
-            <a routerLink="/login" class="login-link" (click)="closeMenu()">Login</a>
+            <a *ngIf="!isAuthPage()" routerLink="/login" class="login-link">Login</a>
           </ng-template>
         </div>
       </div>
@@ -65,19 +65,39 @@ import { AuthService } from '../../core/auth/auth.service';
         z-index: 10;
         backdrop-filter: blur(12px);
       }
-      .brand { font-size: 1.2rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+      .topbar .brand { color: white; font-size: 1.2rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
       .nav-links, .nav-actions { display: flex; align-items: center; gap: 1rem; min-width: 0; }
-      .navbar-toggler { border-color: rgba(255,255,255,0.35); }
-      .navbar-toggler-icon { filter: invert(1); }
-      a { color: white; text-decoration: none; opacity: 0.8; }
+      .navbar-toggler {
+        display: none;
+        width: 44px;
+        height: 40px;
+        padding: 0.5rem;
+        border: 1px solid rgba(255,255,255,0.35);
+        border-radius: 0.375rem;
+      }
+      .navbar-toggler-icon {
+        width: 24px;
+        height: 24px;
+        filter: brightness(0) invert(1);
+      }
+      .navbar-collapse { flex-basis: auto; flex-grow: 1; align-items: center; }
+      .nav-links { flex-direction: row; }
+      .nav-actions { flex-direction: row; }
+      .topbar a { color: white; text-decoration: none; opacity: 0.8; }
       a.active { opacity: 1; font-weight: 700; }
       .login-link, .logout, .theme-toggle { border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; background: transparent; color: white; text-decoration: none; padding: 0.55rem 0.9rem; cursor: pointer; }
       .logout { background: rgba(255,255,255,0.08); }
       .user-label { opacity: 0.9; max-width: 12rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      @media (max-width: 640px) {
-        .topbar { padding: 0.8rem 1rem; }
-        .navbar-collapse { padding-top: 0.75rem; }
+      @media (min-width: 768px) {
+        .navbar-collapse { display: flex !important; }
+      }
+      @media (max-width: 767.98px) {
+        .topbar { align-items: center; padding: 0.8rem 1rem; }
+        .navbar-toggler { display: block; flex: 0 0 44px; margin-left: auto; margin-right: 0.25rem; }
+        .navbar-collapse { flex-basis: 100%; padding-top: 0.75rem; }
+        .navbar-collapse:not(.show) { display: none; }
         .nav-links, .nav-actions { width: 100%; justify-content: space-between; }
+        .nav-links { flex-direction: column; align-items: stretch; }
         .nav-actions { gap: 0.5rem; flex-wrap: wrap; }
         .user-label { max-width: 8rem; }
         .login-link, .logout, .theme-toggle { padding: 0.55rem 0.7rem; }
@@ -87,12 +107,17 @@ import { AuthService } from '../../core/auth/auth.service';
 })
 export class NavComponent {
   readonly isDarkMode = signal(false);
-  readonly menuOpen = signal(false);
+  readonly currentPath = signal('');
 
   constructor(
     protected readonly authService: AuthService,
     private readonly router: Router,
   ) {
+    this.currentPath.set(this.router.url);
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => this.currentPath.set(event.urlAfterRedirects));
+
     const savedTheme = localStorage.getItem('book_quote_theme');
     const dark = savedTheme === 'dark';
     this.isDarkMode.set(dark);
@@ -106,12 +131,8 @@ export class NavComponent {
     localStorage.setItem('book_quote_theme', next ? 'dark' : 'light');
   }
 
-  toggleMenu(): void {
-    this.menuOpen.update((open) => !open);
-  }
-
-  closeMenu(): void {
-    this.menuOpen.set(false);
+  isAuthPage(): boolean {
+    return this.currentPath() === '/login' || this.currentPath() === '/register';
   }
 
   logout(): void {

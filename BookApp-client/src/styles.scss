@@ -6,6 +6,9 @@
 	--border: #cbd5e1;
 	--control-bg: #ffffff;
 	--soft-bg: #f1f5f9;
+	--bs-body-color: var(--text);
+	--bs-body-bg: #f8fafc;
+	--bs-border-color: var(--border);
 }
 
 :root[data-theme='dark'] {
@@ -16,6 +19,9 @@
 	--border: #475569;
 	--control-bg: #111827;
 	--soft-bg: #1e293b;
+	--bs-body-color: var(--text);
+	--bs-body-bg: #020617;
+	--bs-border-color: var(--border);
 }
 
 html, body {

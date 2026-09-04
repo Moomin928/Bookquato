@@ -17,6 +17,7 @@ import { Quote, QuoteService } from '../../services/quote.service';
       </div>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="quote-form">
+        <h2>{{ editingId === null ? 'Add a quote' : 'Edit quote' }}</h2>
         <div class="field">
           <label>Quote</label>
           <textarea class="form-control" formControlName="text" rows="4" placeholder="Write a favorite quote..."></textarea>
@@ -27,6 +28,9 @@ import { Quote, QuoteService } from '../../services/quote.service';
         </div>
         <button class="primary btn btn-primary" type="submit" [disabled]="form.invalid || submitting">
           {{ submitting ? 'Saving...' : 'Save quote' }}
+        </button>
+        <button *ngIf="editingId !== null" class="ghost btn btn-light" type="button" (click)="cancelEdit()">
+          Cancel edit
         </button>
       </form>
 
@@ -139,6 +143,11 @@ export class QuoteListComponent implements OnInit {
       authorName: quote.authorName ?? '',
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+    this.form.reset();
   }
 
   deleteQuote(id: number): void {
