@@ -16,7 +16,7 @@ export interface QuoteRequest {
 
 @Injectable({ providedIn: 'root' })
 export class QuoteService {
-  private readonly apiUrl = 'http://localhost:5181/api';
+  private readonly apiUrl = 'https://bookquato.onrender.com/api';
 
   constructor(private readonly http: HttpClient) {}
 
